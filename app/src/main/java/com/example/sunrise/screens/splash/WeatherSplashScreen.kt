@@ -1,4 +1,4 @@
-package com.example.sunrise.screens
+package com.example.sunrise.screens.splash
 
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
