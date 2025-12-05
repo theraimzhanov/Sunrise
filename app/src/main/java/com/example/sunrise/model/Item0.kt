@@ -7,7 +7,7 @@ data class Item0(
     val feels_like: FeelsLike,
     val gust: Double,
     val humidity: Int,
-    val pop: Int,
+    val pop: Double,
     val pressure: Int,
     val snow: Double,
     val speed: Double,
