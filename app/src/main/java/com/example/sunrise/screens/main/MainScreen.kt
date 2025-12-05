@@ -4,11 +4,17 @@ package com.example.sunrise.screens.main
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,9 +30,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
@@ -36,7 +46,12 @@ import com.example.sunrise.model.Item0
 import com.example.sunrise.model.Weather
 import com.example.sunrise.utils.formatDate
 import com.example.sunrise.utils.formatDecimals
+import com.example.sunrise.utils.formateDateTime
+import com.example.sunrise.widgets.HumidityWindPressureRow
+import com.example.sunrise.widgets.SunsetSunRiseRow
 import com.example.sunrise.widgets.WeatherAppBar
+import com.example.sunrise.widgets.WeatherDetailRow
+import com.example.sunrise.widgets.WeatherStateImage
 import java.nio.file.WatchEvent
 
 @Composable
@@ -115,51 +130,24 @@ fun MainContent(data: Weather, modifier: Modifier) {
         }
         HumidityWindPressureRow(weather = data.list[0])
         Divider()
-    }
-}
-
-@Composable
-fun HumidityWindPressureRow(weather: Item0) {
-    Row(
-        modifier = Modifier
-            .padding(12.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(modifier = Modifier.padding(4.dp)) {
-            Icon(
-                painter = painterResource(R.drawable.humidity),
-                contentDescription = "humidity icon",
-                modifier = Modifier.size(20.dp)
-            )
-            Text("${weather.humidity} %", style = MaterialTheme.typography.bodyMedium)
-        }
-        Row(modifier = Modifier.padding(4.dp)) {
-            Icon(
-                painter = painterResource(R.drawable.pressure),
-                contentDescription = "pressure icon",
-                modifier = Modifier.size(20.dp)
-            )
-            Text("${weather.pressure} psi", style = MaterialTheme.typography.bodyMedium)
-        }
-        Row(modifier = Modifier.padding(4.dp)) {
-            Icon(
-                painter = painterResource(R.drawable.wind), contentDescription = "wind icon",
-                modifier = Modifier.size(20.dp)
-            )
-            Text("${weather.humidity} mph", style = MaterialTheme.typography.bodyMedium)
+        SunsetSunRiseRow(weather = data.list[0])
+        Text(
+            text = "This Week",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold)
+        Surface(modifier= Modifier.fillMaxWidth().fillMaxHeight(),
+            color = Color(0xFFEEF1EF),
+            shape = RoundedCornerShape(14.dp)
+        ) {
+            LazyColumn(modifier = Modifier.padding(2.dp),
+                contentPadding = PaddingValues(1.dp)
+            ) {
+                items(items=data.list) { item: Item0->
+                  WeatherDetailRow(weather=item)
+                }
+            }
         }
 
     }
 }
 
-
-@Composable
-fun WeatherStateImage(imageUrl: String) {
-    Image(
-        painter = rememberImagePainter(imageUrl),
-        contentDescription = "icon image",
-        modifier = Modifier.size(80.dp)
-    )
-}
