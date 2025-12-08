@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.sunrise.navigation.WeatherScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,45 +54,60 @@ fun WeatherAppBar(
     icon: ImageVector? = null,
     isMainScreen: Boolean = true,
     elevation: Dp = 0.dp,
-   navController: NavController,
-    onAddActionClicked:()-> Unit={},
-    onButtonClicked:()->Unit = {}
-    ) {
+    navController: NavController,
+    onAddActionClicked: () -> Unit = {},
+    onButtonClicked: () -> Unit = {}
+) {
 
-val showDialog = remember{
-    mutableStateOf(false)
-}
-if (showDialog.value){
-    ShowSettingDropDownMenu(showDialog=showDialog,navController=navController)
-}
+    val showDialog = remember {
+        mutableStateOf(false)
+    }
+    if (showDialog.value) {
+        ShowSettingDropDownMenu(showDialog = showDialog, navController = navController)
+    }
     Surface(shadowElevation = elevation) {
         TopAppBar(
-            title ={Text(text = title,
-                color = MaterialTheme.colorScheme.onSecondary,
-                style = TextStyle(fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp))
+            title = {
+                Text(
+                    text = title,
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    )
+                )
             }, actions = {
-                if (isMainScreen){
-                    IconButton(onClick = {onAddActionClicked.invoke()}) { Icon(imageVector = Icons.Default.Search, contentDescription = "search icon") }
+                if (isMainScreen) {
+                    IconButton(onClick = { onAddActionClicked.invoke() }) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "search icon"
+                        )
+                    }
                     IconButton(onClick = {
                         showDialog.value = true
-                    }) { Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = "search rounded") }
-                } else Box{}
+                    }) {
+                        Icon(
+                            imageVector = Icons.Rounded.MoreVert,
+                            contentDescription = "search rounded"
+                        )
+                    }
+                } else Box {}
             },
             navigationIcon = {
-                if (icon!=null){
-                    Icon(imageVector = icon, contentDescription = "icon",
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon, contentDescription = "icon",
                         tint = MaterialTheme.colorScheme.onSecondary,
-                        modifier = Modifier.clickable{
+                        modifier = Modifier.clickable {
                             onButtonClicked.invoke()
                         })
                 }
             }, colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.primary,
-                )
+            )
         )
     }
-
 
 }
 
@@ -104,49 +120,49 @@ fun ShowSettingDropDownMenu(showDialog: MutableState<Boolean>, navController: Na
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentSize(Alignment.TopEnd)
-            .padding(top = 45.dp, end = 25.dp)
+            .absolutePadding(top = 45.dp, right = 25.dp)
     ) {
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = {
-                expanded = false
-                showDialog.value = false
-            },
-            modifier = Modifier
-                .width(160.dp)
-                .background(Color.White)
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.width(160.dp).background(Color.White)
         ) {
             items.forEach { text ->
 
-                val icon = when (text) {
-                    "About" -> Icons.Default.Info
-                    "Favorites" -> Icons.Default.FavoriteBorder
-                    else -> Icons.Default.Settings
-                }
-
                 DropdownMenuItem(
-                    text = { Text(text, fontWeight = FontWeight.W300) },
+                    text = {
+                        Text(
+                            text = text,
+                            fontWeight = FontWeight.W300
+                        )
+                    },
                     leadingIcon = {
                         Icon(
-                            imageVector = icon,
+                            imageVector = when (text) {
+                                "About" -> Icons.Default.Info
+                                "Favorites" -> Icons.Default.FavoriteBorder
+                                else -> Icons.Default.Settings
+                            },
                             contentDescription = null,
-                            tint = Color.Gray
+                            tint = Color.LightGray
                         )
                     },
                     onClick = {
                         expanded = false
                         showDialog.value = false
 
-
-                        when (text) {
-                            "About" -> { }
-                            "Favorites" -> {}
-                            "Settings" -> {}
+                        val route = when (text) {
+                            "About" -> WeatherScreens.AboutScreen.name
+                            "Favorites" -> WeatherScreens.FavoriteScreen.name
+                            else -> WeatherScreens.SettingScreen.name
                         }
+
+                        navController.navigate(route)
                     }
                 )
             }
         }
     }
 }
+
 

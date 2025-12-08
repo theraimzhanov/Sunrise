@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Sunrise</string>
+    <string name="about_app">Sunrise v.0.2</string>
+    <string name="api_used">Sunrise Api by https://openweathermap/org </string>
 </resources>
