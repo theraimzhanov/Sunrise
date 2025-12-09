@@ -65,7 +65,6 @@ fun MainScreen(
 
 @Composable
 fun MainScaffold(weather: Weather, navController: NavController) {
-    val favoriteViewModel: FavoriteViewModel = hiltViewModel()
 
     Scaffold(topBar = {
         WeatherAppBar(
