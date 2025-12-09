@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull
 
 @Entity(tableName = "fav_tbl")
 data class Favorite(
-    @NotNull
+    @param:NotNull
     @PrimaryKey
     @ColumnInfo(name = "city")
     val city: String,

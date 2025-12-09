@@ -3,6 +3,7 @@ package com.example.sunrise.screens.favorites
 import android.view.Surface
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,11 +53,20 @@ fun FavoriteScreen(
        Column(verticalArrangement = Arrangement.Center,
            horizontalAlignment = Alignment.CenterHorizontally) {
            val list = favoriteViewModel.favList.collectAsState().value
-           LazyColumn{
+        /*   LazyColumn{
                items(items=list){
                    CityRow(it,navController=navController,favoriteViewModel)
                }
+           }*/
+           LazyColumn {
+               items(
+                   items = list,
+                   key = { favorite -> favorite.city }   // or favorite.id if you added id
+               ) {
+                   CityRow(it, navController, favoriteViewModel)
+               }
            }
+
        }
    }
 }
@@ -73,24 +83,26 @@ navController.navigate(WeatherScreens.MainScreen.name+"/${favorite.city}")
         shape = CircleShape.copy(topEnd = CornerSize(6.dp)),
         color = Color(0xFFB2DFDB)
         ) {
-        Row(modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly) {
-            Text(text = favorite.city, modifier = Modifier.padding(4.dp))
-            Surface(modifier = Modifier.padding(0.dp),
-                shape = CircleShape,
-                color = Color(0xFFD1E3E1)){
-                Text(text = favorite.country,
-                    modifier = Modifier.padding(4.dp),
-                    style = MaterialTheme.typography.bodyMedium)
-            }
-            Icon(imageVector = Icons.Rounded.Delete,
-                contentDescription = "delete",
-modifier = Modifier.clickable{
-favoriteViewModel.deleteFavorite(favorite)
 
-}, tint = Color.Red
+            Row(modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly) {
+                Text(text = favorite.city, modifier = Modifier.padding(4.dp))
+                Surface(modifier = Modifier.padding(0.dp),
+                    shape = CircleShape,
+                    color = Color(0xFFD1E3E1)){
+                    Text(text = favorite.country,
+                        modifier = Modifier.padding(4.dp),
+                        style = MaterialTheme.typography.bodyMedium)
+                }
+                Icon(imageVector = Icons.Rounded.Delete,
+                    contentDescription = "delete",
+                    modifier = Modifier.clickable{
+                        favoriteViewModel.deleteFavorite(favorite)
+
+                    }, tint = Color.Red
                 )
+
         }
 
     }
