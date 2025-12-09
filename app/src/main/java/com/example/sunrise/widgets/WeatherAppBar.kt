@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
@@ -44,8 +45,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.sunrise.model.Favorite
 import com.example.sunrise.navigation.WeatherScreens
+import com.example.sunrise.screens.favorites.FavoriteScreen
+import com.example.sunrise.screens.favorites.FavoriteViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +61,7 @@ fun WeatherAppBar(
     isMainScreen: Boolean = true,
     elevation: Dp = 0.dp,
     navController: NavController,
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
     onAddActionClicked: () -> Unit = {},
     onButtonClicked: () -> Unit = {}
 ) {
@@ -103,6 +110,25 @@ fun WeatherAppBar(
                             onButtonClicked.invoke()
                         })
                 }
+                if (isMainScreen) {
+                    Icon(
+                        imageVector = Icons.Default.Favorite,
+                        contentDescription = "Favorite icon",
+                        modifier = Modifier
+                            .scale(0.9f)
+                            .clickable {
+                                val dataList = title.split(",")
+                                favoriteViewModel.insertFavorite(
+                                    Favorite(
+                                        city = dataList[0],
+                                        country = dataList[1]
+                                    )
+                                )
+                            },
+                        tint = Color.Red.copy(alpha = 0.6f)
+                    )
+                }
+
             }, colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.primary,
             )
@@ -125,7 +151,9 @@ fun ShowSettingDropDownMenu(showDialog: MutableState<Boolean>, navController: Na
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.width(160.dp).background(Color.White)
+            modifier = Modifier
+                .width(160.dp)
+                .background(Color.White)
         ) {
             items.forEach { text ->
 

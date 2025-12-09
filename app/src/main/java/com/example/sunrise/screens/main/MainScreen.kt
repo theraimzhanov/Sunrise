@@ -33,6 +33,7 @@ import com.example.sunrise.data.DataOrException
 import com.example.sunrise.model.Item0
 import com.example.sunrise.model.Weather
 import com.example.sunrise.navigation.WeatherScreens
+import com.example.sunrise.screens.favorites.FavoriteViewModel
 import com.example.sunrise.utils.formatDate
 import com.example.sunrise.utils.formatDecimals
 import com.example.sunrise.widgets.HumidityWindPressureRow
@@ -64,6 +65,8 @@ fun MainScreen(
 
 @Composable
 fun MainScaffold(weather: Weather, navController: NavController) {
+    val favoriteViewModel: FavoriteViewModel = hiltViewModel()
+
     Scaffold(topBar = {
         WeatherAppBar(
             weather.city.name + ", ${weather.city.country}",
