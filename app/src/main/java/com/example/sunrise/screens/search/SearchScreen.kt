@@ -79,7 +79,7 @@ fun SearchBar(modifier: Modifier=Modifier,
     Column {
         CommonTextField(
             valueState = searchQueryState,
-            placeholder = "City",
+            placeholder = "Location",
                     onAction = KeyboardActions {
 
                         if (!valid) return@KeyboardActions
