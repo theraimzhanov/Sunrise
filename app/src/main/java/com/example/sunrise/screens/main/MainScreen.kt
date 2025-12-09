@@ -1,7 +1,6 @@
 package com.example.sunrise.screens.main
 
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,7 +19,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,7 +37,7 @@ import com.example.sunrise.data.DataOrException
 import com.example.sunrise.model.Item0
 import com.example.sunrise.model.Weather
 import com.example.sunrise.navigation.WeatherScreens
-import com.example.sunrise.screens.favorites.FavoriteViewModel
+import com.example.sunrise.screens.setting.SettingViewModel
 import com.example.sunrise.utils.formatDate
 import com.example.sunrise.utils.formatDecimals
 import com.example.sunrise.widgets.HumidityWindPressureRow
@@ -46,25 +50,40 @@ import com.example.sunrise.widgets.WeatherStateImage
 fun MainScreen(
     navController: NavController,
     mainViewModel: MainViewModel = hiltViewModel(),
+    settingsViewModel: SettingViewModel = hiltViewModel(),
     city: String?
 ) {
-    Log.d("TAG", "MainScreen: $city")
-    val weatherData = produceState<DataOrException<Weather, Boolean, Exception>>(
-        initialValue = DataOrException(loading = true)
-    ) {
-        value = mainViewModel.getWeatherData(city.toString())
-    }.value
-
-    if (weatherData.loading == true) {
-        CircularProgressIndicator()
-    } else if (weatherData.data != null) {
-        MainScaffold(weatherData.data!!, navController)
+val curCity: String = if (city!!.isBlank()) "Seattle" else city
+    val unitFromDb =settingsViewModel.unitList.collectAsState().value
+    var unit by remember{
+        mutableStateOf("imperial")
     }
+    var isImperial by remember {
+        mutableStateOf(false)
+    }
+    if (!unitFromDb.isNullOrEmpty()){
+        unit = unitFromDb[0].unit.split(" ")[0].lowercase()
+        isImperial = unit =="imperial"
+        val weatherData = produceState<DataOrException<Weather, Boolean, Exception>>(
+            initialValue = DataOrException(loading = true)
+        ) {
+            value = mainViewModel.getWeatherData(curCity.toString(),
+                units=unit)
+        }.value
+
+        if (weatherData.loading == true) {
+            CircularProgressIndicator()
+        } else if (weatherData.data != null) {
+            MainScaffold(weatherData.data!!, navController,isImperial = isImperial)
+        }
+    }
+
+
 
 }
 
 @Composable
-fun MainScaffold(weather: Weather, navController: NavController) {
+fun MainScaffold(weather: Weather, navController: NavController, isImperial: Boolean) {
 
     Scaffold(topBar = {
         WeatherAppBar(
@@ -76,14 +95,14 @@ fun MainScaffold(weather: Weather, navController: NavController) {
 
         }
     }) {
-        MainContent(data = weather, modifier = Modifier.padding(it))
+        MainContent(data = weather, modifier = Modifier.padding(it), isImperial = isImperial)
     }
 
 }
 
 
 @Composable
-fun MainContent(data: Weather, modifier: Modifier) {
+fun MainContent(data: Weather, modifier: Modifier, isImperial: Boolean) {
 
     val imageUrl = "https://openweathermap.org/img/wn/${data.list[0].weather[0].icon}.png"
 
@@ -122,7 +141,7 @@ fun MainContent(data: Weather, modifier: Modifier) {
                 Text(text = data.list[0].weather[0].main, fontStyle = FontStyle.Italic)
             }
         }
-        HumidityWindPressureRow(weather = data.list[0])
+        HumidityWindPressureRow(weather = data.list[0],isImperial=isImperial)
         Divider()
         SunsetSunRiseRow(weather = data.list[0])
         Text(

@@ -7,9 +7,9 @@ import com.example.sunrise.network.WeatherApi
 import javax.inject.Inject
 
 class WeatherRepository @Inject constructor(private val api: WeatherApi) {
-    suspend fun getWeather(cityQuery: String): DataOrException<Weather, Boolean, Exception> {
+    suspend fun getWeather(cityQuery: String, units: String): DataOrException<Weather, Boolean, Exception> {
         val respond = try {
-            api.getWeather(query = cityQuery)
+            api.getWeather(query = cityQuery,units)
         } catch (e: Exception) {
             Log.d("REX", "getWeather: $e")
             return DataOrException(e = e)
