@@ -58,6 +58,8 @@ To use the app, you must add your own OpenWeatherMap API key.
 </table>
 
 ---
+## 📄 License 
+This project is licensed under the MIT License — see the LICENSE file for details.
 
 ## 📱 App Screenshots
 
